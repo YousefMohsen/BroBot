@@ -1,19 +1,14 @@
-#!/usr/bin/env pybricks-micropython
-# So program can be run from Brickman
+#!/usr/bin/env python3
+from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B, SpeedPercent, MoveTank
+from ev3dev2.sensor import INPUT_1
+from ev3dev2.sensor.lego import TouchSensor
+from ev3dev2.led import Leds
+from ev3dev2.sound import Sound
 
-from ev3dev.ev3 import *
-from time import sleep
+sound = Sound()
+sound.beep()
 
+#move forward for 2 seconds
+tank_drive = MoveTank(OUTPUT_A, OUTPUT_B)
+tank_drive.on_for_seconds(SpeedPercent(-20),SpeedPercent(-20), 2)
 
-from pybricks import ev3brick as brick
-from pybricks.ev3devices import Motor
-from pybricks.parameters import Port
-# Play a sound.
-brick.sound.beep()
-# Initialize a motor at port B.
-test_motor = Motor(Port.B)
-# Run the motor up to 500 degrees per second. To a target angle of 90 degrees.
-test_motor.run_target(500, 90)
-# Play another beep sound.
-# This time with a higher pitch (1000 Hz) and longer duration (500 ms).
-brick.sound.beep(1000, 500)
