@@ -12,7 +12,7 @@ def limit_speed(speed):
 # Connect Pixy camera and set mode
 pixy = Sensor(address = INPUT_1)
 assert pixy.connected, "Error while connecting Pixy camera"
-pixy.mode = 'ALL'
+pixy.mode = 'SIG1'
 
 # Connect TouchSensor (to stop script)
 ts = TouchSensor(INPUT_4)
