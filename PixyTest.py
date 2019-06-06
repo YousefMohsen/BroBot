@@ -5,6 +5,8 @@ from smbus import SMBus
 sound = Sound()
 sound.beep()
 
+#sound.speak("David, you are a douchebag")
+
 
 # get a Port object to control the input port
 in1 = LegoPort(address=INPUT_1)
@@ -19,17 +21,34 @@ bus = SMBus(3)  # bus number is input port number + 2
 I2C_ADDRESS = 0x01  # the default I2C address of the sensor
 while True:
     # read the number of object detected
-    num = bus.read_byte_data(I2C_ADDRESS, 0x42)
-    if num:
-        sound.beep()
+  # num = bus.read_byte_data(I2C_ADDRESS, 0x42)
+   # if num:
+      #  print(bus.read_i2c_block_data(I2C_ADDRESS, 0x42))
+     #   print("NUM",num)
+     #   print("printing x in nums")
+        #sound.beep()
+      #  x1 = bus.read_byte_data(I2C_ADDRESS, 0x42)
+      #  y1 = bus.read_byte_data(I2C_ADDRESS, 0x07)
+      #  x2 = bus.read_byte_data(I2C_ADDRESS, 0x5E)
+      #  y2 = bus.read_byte_data(I2C_ADDRESS, 0x5A)
 
-        x1, y1, x2, y2 = bus.read_i2c_block_data(I2C_ADDRESS, 0x44, 4)
+        x1, y1, x2, y2, t1,t2,t3 = bus.read_i2c_block_data(I2C_ADDRESS, 0x51, 7)
         # do stuff with coordinates
         print("x1", x1)
         print("y1", y1)
         print("x2", x2)
         print("y2", y2)
-        print("-----------")
+        print("t1", t1)
+        print("t2", t2)
+        print("t3", t3)
+        print("-----------\n")
+        time.sleep(0.5)
+
+        #time.sleep(1)
+    # for x in range(150):
+     #    res = bus.read_byte_data(I2C_ADDRESS, int(hex(x),16  )) 
+      #   print(x,"res: ",res)
+       #  time.sleep(1)
 
 
 #inf = Sensor(address=INPUT_2)
