@@ -7,7 +7,8 @@ from ev3dev2.sound import Sound
 
 sound = Sound()
 sound.beep()
-sound.speak("Whats up my niggas")
+
+
 gyro = GyroSensor(INPUT_2)
 motors = MoveTank(OUTPUT_D, OUTPUT_A)
 us = UltrasonicSensor(INPUT_3)
@@ -65,13 +66,13 @@ def turnLeftByDegrees(degrees):
 
 # turnByDegrees(5)
 # dosen't work
-""" def driveStraightGyro(power):
-    error = -gyro.angle
-    print("error",error)
-    motors.on_for_rotations(SpeedPercent(-10), SpeedPercent(-10), error)
+def driveStraightGyro(power):
+    power = -gyro.angle * -10
+    print("power",power)
+    motors.on_for_degrees(-30, -30,degrees=power)
 
- """
-# driveStraightGyro(3)
+while True:
+    driveStraightGyro(10)
 
 
 def turnBack(left):
@@ -100,4 +101,4 @@ def main():
 
 
 
-main()
+#main()
