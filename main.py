@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_D, SpeedPercent, MoveTank
-from ev3dev2.motor import MoveSteering, OUTPUT_A, OUTPUT_D
+from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_D, SpeedPercent, MoveTank, MoveSteering
 
 from ev3dev2.sensor import INPUT_1, INPUT_4, INPUT_2, Sensor, INPUT_3
 from ev3dev2.sensor.lego import TouchSensor, GyroSensor, UltrasonicSensor
@@ -11,10 +10,9 @@ import time
 sound = Sound()
 sound.beep()
 
-
 gyro = GyroSensor(INPUT_2)
 motors = MoveTank(OUTPUT_D, OUTPUT_A)
-steering_drive = MoveSteering(OUTPUT_A, OUTPUT_D)
+steering_drive = MoveSteering(OUTPUT_D, OUTPUT_A)
 us = UltrasonicSensor(INPUT_3)
 # tank_pair = MoveTank(OUTPUT_D, OUTPUT_A)
 
@@ -72,33 +70,34 @@ def turnLeftByDegrees(degrees):
 
 
 def driveStraightGyro(power):
-    error = gyro.angle * -10
+    error = -(gyro.angle / 360) * 100
     print("error ",error)
     print("gyro.angle ",gyro.angle)
-
-
-    '''if(error == 0):
-        moveForward(power)
-    else:
-        steering_drive.on_for_degrees(-100, -power, abs(error))
-    '''
+    #if(error == 0):
+    #    moveForward(power)
+    #else:
+    steering_drive.on(error, -power)
+    
 
 def turnBack(left):
     if(left):
         turnLeftByDegrees(90)
         motors.on_for_rotations(10, 10, -0.5)
         turnLeftByDegrees(90)
+        resetGyroAngle()
     else:
         turnRightByDegrees(90)
         motors.on_for_rotations(10, 10, -0.5)
         turnRightByDegrees(90)
+        resetGyroAngle()
 
 
 def main():
+    resetGyroAngle()
     turnRight = True
     while True:
         while(us.distance_centimeters > 20):
-            driveStraightGyro(50)
+            driveStraightGyro(30)
 
         if(turnRight):
             turnBack(False)
@@ -109,4 +108,4 @@ def main():
 
 
 
-#main()
+main()
