@@ -4,7 +4,6 @@ from ev3dev.ev3 import *
 from smbus import SMBus
 sound = Sound()
 sound.beep()
-sound.speak("broooooo")
 
 #sound.speak("David, you are a douchebag")
 
@@ -33,12 +32,14 @@ while True:
       #  x2 = bus.read_byte_data(I2C_ADDRESS, 0x5E)
       #  y2 = bus.read_byte_data(I2C_ADDRESS, 0x5A)
 
-        ignore1, x, y, width, height,ignore2, ignore3 = bus.read_i2c_block_data(I2C_ADDRESS, 0x51, 7)
+        signatureType, ignore, x, y, width, height = bus.read_i2c_block_data(I2C_ADDRESS, 0x50, 6)
         # do stuff with coordinates
+        print("Signature ", signatureType)
         print("x", x)
         print("y", y)
         print("width", width)
         print("height", height)
+
         print("-----------\n")
         time.sleep(2)
       
