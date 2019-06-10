@@ -9,14 +9,16 @@ import time
 
 sound = Sound()
 sound.beep()
-
+sound.speak("David please fuck off")
 gyro = GyroSensor(INPUT_2)
 motors = MoveTank(OUTPUT_D, OUTPUT_A)
 steering_drive = MoveSteering(OUTPUT_D, OUTPUT_A)
 us = UltrasonicSensor(INPUT_3)
+
 # tank_pair = MoveTank(OUTPUT_D, OUTPUT_A)
 
 def resetGyroAngle():
+    motors.off()
     gyro.mode = 'GYRO-RATE'
     gyro.mode = 'GYRO-ANG'
 
@@ -35,11 +37,13 @@ def stopMotor(motor):
 
 def turnRightByDegrees(degrees):
     print("moveForwardGyro")
-    turnSpeed = -40
+    resetGyroAngle()
+
+    turnSpeed = -20
     # Connect gyro sensor.
 
     # Start the left motor with speed 40% to initiate a medium turn right.
-    motors.on(left_speed=turnSpeed, right_speed=0)
+    motors.on(left_speed=turnSpeed, right_speed=-turnSpeed)
 
     # Wait until the gyro sensor detects that the robot has turned
     # (at least) 90 deg in the positive direction (to the right)
@@ -53,11 +57,12 @@ def turnRightByDegrees(degrees):
 
 def turnLeftByDegrees(degrees):
     print("moveForwardGyro")
-    turnSpeed = -40
+    resetGyroAngle()
+    turnSpeed = -20
     # Connect gyro sensor.
 
     # Start the left motor with speed 40% to initiate a medium turn right.
-    motors.on(left_speed=0, right_speed=turnSpeed)
+    motors.on(left_speed=-turnSpeed, right_speed=turnSpeed)
 
     # Wait until the gyro sensor detects that the robot has turned
     # (at least) 90 deg in the positive direction (to the right)
@@ -70,42 +75,60 @@ def turnLeftByDegrees(degrees):
 
 
 def driveStraightGyro(power):
-    error = -(gyro.angle / 360) * 100
-    print("error ",error)
+    resetGyroAngle()
+    #error = (gyro.angle / 360) * 100
+    error =  -1 * gyro.angle
+    #print("error ",error)
     print("gyro.angle ",gyro.angle)
+    time.sleep(1)
     #if(error == 0):
     #    moveForward(power)
     #else:
     steering_drive.on(error, -power)
     
 
-def turnBack(left):
+
+def turnBack(left,turnDegrees):
+    motors.off()
     if(left):
-        turnLeftByDegrees(90)
+        turnLeftByDegrees(turnDegrees)
         motors.on_for_rotations(10, 10, -0.5)
-        turnLeftByDegrees(90)
-        resetGyroAngle()
+        turnLeftByDegrees(turnDegrees)
     else:
-        turnRightByDegrees(90)
+        turnRightByDegrees(turnDegrees)
         motors.on_for_rotations(10, 10, -0.5)
-        turnRightByDegrees(90)
-        resetGyroAngle()
+        turnRightByDegrees(turnDegrees)
+
+    if(turnDegrees==90):
+        return 85
+    else:
+       return 90
+
 
 
 def main():
+    turnDegrees = 90
     resetGyroAngle()
     turnRight = True
     while True:
         while(us.distance_centimeters > 20):
             driveStraightGyro(30)
+          #  moveForward(30)
 
         if(turnRight):
-            turnBack(False)
-            turnRight = False
+          turnDegrees =  turnBack(False, turnDegrees)
+          turnRight = False
         else:
-            turnBack(True)
-            turnRight = True
+           turnDegrees = turnBack(True, turnDegrees)
+           turnRight = True
 
 
 
-main()
+#main()
+#turnBack(True)
+#turnRightByDegrees(90)
+#turnLeftByDegrees(90)
+#turnRightByDegrees(90)
+#turnLeftByDegrees(90)
+while True
+    driveStraightGyro(30)
