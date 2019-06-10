@@ -5,24 +5,41 @@ from ev3dev2.sensor import INPUT_1, INPUT_4, INPUT_2, Sensor, INPUT_3
 from ev3dev2.sensor.lego import TouchSensor, GyroSensor, UltrasonicSensor
 from ev3dev2.led import Leds
 from ev3dev2.sound import Sound
+from ev3dev2.port import LegoPort
+
 import time
+from smbus import SMBus
+
+
 
 sound = Sound()
 sound.beep()
-sound.speak("David please fuck off")
+#sound.speak("David please shut up")
 gyro = GyroSensor(INPUT_2)
 motors = MoveTank(OUTPUT_D, OUTPUT_A)
 steering_drive = MoveSteering(OUTPUT_D, OUTPUT_A)
 us = UltrasonicSensor(INPUT_3)
-
 # tank_pair = MoveTank(OUTPUT_D, OUTPUT_A)
+#init pixy 
+# get a Port object to control the input port
+in1 = LegoPort(address=INPUT_1)
+# force the port into i2c-other mode so that the default driver is not automatically loaded
+in1.mode = 'other-i2c'
+
+# might need a short delay here (e.g. time.sleep(0.5)) to wait for the I2C port to be setup
+# note: this delay should only be needed in ev3dev-jessie (4.4.x kernel), not ev3dev-stretch (4.9.x kernel)
+
+
+bus = SMBus(3)  # bus number is input port number + 2
+I2C_ADDRESS = 0x01  # the default I2C address of the sensor
+
 
 def resetGyroAngle():
     motors.off()
     gyro.mode = 'GYRO-RATE'
     gyro.mode = 'GYRO-ANG'
 
-def moveForward(speed):
+def drive(speed):
     print("messi")
     motors.on(SpeedPercent(-speed), SpeedPercent(-speed))
 
@@ -82,7 +99,7 @@ def driveStraightGyro(power):
     print("gyro.angle ",gyro.angle)
     time.sleep(1)
     #if(error == 0):
-    #    moveForward(power)
+    #    drive(power)
     #else:
     steering_drive.on(error, -power)
     
@@ -106,14 +123,35 @@ def turnBack(left,turnDegrees):
 
 
 
+
+def lookForObstacle(signatureToFind,callback):
+       # signatureToFind = 1
+        signatureType, ignore, x, y, width, height = bus.read_i2c_block_data(I2C_ADDRESS, 0x50, 6)
+        # do stuff with coordinates
+        print("Signature ", signatureType)
+        print("x", x)
+        print("y", y)
+        print("width", width)
+        print("height", height)
+
+        print("-----------\n")
+        time.sleep(2)
+        if(signatureType==signatureToFind):
+            callback(x, y, width, height)
+
+
+
+
+
 def main():
     turnDegrees = 90
-    resetGyroAngle()
     turnRight = True
+    resetGyroAngle()
+    lookForObstacle()
     while True:
         while(us.distance_centimeters > 20):
-            driveStraightGyro(30)
-          #  moveForward(30)
+           # driveStraightGyro(30)
+            drive(30)
 
         if(turnRight):
           turnDegrees =  turnBack(False, turnDegrees)
@@ -125,10 +163,41 @@ def main():
 
 
 #main()
-#turnBack(True)
+#turnBack(True,90)
 #turnRightByDegrees(90)
 #turnLeftByDegrees(90)
 #turnRightByDegrees(90)
 #turnLeftByDegrees(90)
-while True
-    driveStraightGyro(30)
+#while True:
+ #   drive(30)
+def obstacleFound(x, y, width, height):
+        motors.off()
+        motors.on_for_rotations(10,10,0.5) #move 2 rotations back
+        #turnLeftByDegrees(90) #turn left
+        #motors.on_for_rotations(-10,-10,1) #move 6 rotations back
+        #turnRightByDegrees(90) #turn right
+        #motors.on_for_rotations(-10,-10,2.9) #move 6 rotations back
+        #turnRightByDegrees(90) #turn right
+        #motors.on_for_rotations(-10,-10,0.5) #move 6 rotations back
+        #turnLeftByDegrees(90) #turn right
+        
+        turnLeftByDegrees(50) #turn left
+        motors.on_for_rotations(10,10,-2) 
+        turnRightByDegrees(100) #turn right
+        motors.on_for_rotations(10,10,-2) 
+        turnLeftByDegrees(50) #turn left
+
+
+
+
+
+
+
+      # motors.on_for_rotations(-10,-10,2) #move 6 rotations back
+
+             
+
+while True:
+     lookForObstacle(1,obstacleFound)
+     #drive(15)
+#obstacleFound(1,2,3,4)
