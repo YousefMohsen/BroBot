@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from ev3dev.ev3 import *
+from smbus import SMBus
+
 
 
 def limit_speed(speed):
@@ -8,17 +10,27 @@ def limit_speed(speed):
         speed = 900
     elif speed < -900:
         speed = -900
-    return speed
+    return -speed
 
+in1 = LegoPort(address=INPUT_1)
+# force the port into i2c-other mode so that the default driver is not automatically loaded
+in1.mode = 'other-i2c'
+
+# might need a short delay here (e.g. time.sleep(0.5)) to wait for the I2C port to be setup
+# note: this delay should only be needed in ev3dev-jessie (4.4.x kernel), not ev3dev-stretch (4.9.x kernel)
+
+
+bus = SMBus(3)  # bus number is input port number + 2
+I2C_ADDRESS = 0x01  # the default I2C address of the sensor
 
 # Connect Pixy camera and set mode
-pixy = Sensor(address=INPUT_1)
-assert pixy.connected, "Error while connecting Pixy camera"
-pixy.mode = 'SIG1'
+#pixy = Sensor(address=INPUT_1)
+#assert pixy.connected, "Error while connecting Pixy camera"
+#pixy.mode = 'SIG1'
 
 # Connect TouchSensor (to stop script)
-ts = TouchSensor(INPUT_4)
-assert ts.connected, "Error while connecting TouchSensor"
+#ts = TouchSensor(INPUT_4)
+#assert ts.connected, "Error while connecting TouchSensor"
 
 # Connect LargeMotors
 rmotor = LargeMotor(OUTPUT_A)
@@ -42,10 +54,54 @@ integral_y = 0
 derivative_y = 0
 last_dy = 0
 
-while not ts.value():
-    if pixy.value(0) > 0:
-        x = pixy.value(1)             # X-centroid of largest SIG1-object
-        y = pixy.value(2)             # Y-centroid of largest SIG1-object
+while True:
+    signatureType, ignore, x, y, width, height = bus.read_i2c_block_data(I2C_ADDRESS, 0x50, 6)
+
+    if signatureType > 0:
+       # x = pixy.value(1)             # X-centroid of largest SIG1-object
+       # y = pixy.value(2)             # Y-centroid of largest SIG1-object
+# Initializing PID variables
+integral_x = 0
+derivative_x = 0
+last_dx = 0
+integral_y = 0
+derivative_y = 0
+last_dy = 0
+
+while True:
+    signatureType, ignore, x, y, width, height = bus.read_i2c_block_data(I2C_ADDRESS, 0x50, 6)
+
+    if signatureType > 0:
+       # x = pixy.value(1)             # X-centroid of largest SIG1-object
+       # y = pixy.value(2)             # Y-centroid of largest SIG1-object
+# Initializing PID variables
+integral_x = 0
+derivative_x = 0
+last_dx = 0
+integral_y = 0
+derivative_y = 0
+last_dy = 0
+
+while True:
+    signatureType, ignore, x, y, width, height = bus.read_i2c_block_data(I2C_ADDRESS, 0x50, 6)
+
+    if signatureType > 0:
+       # x = pixy.value(1)             # X-centroid of largest SIG1-object
+       # y = pixy.value(2)             # Y-centroid of largest SIG1-object
+# Initializing PID variables
+integral_x = 0
+derivative_x = 0
+last_dx = 0
+integral_y = 0
+derivative_y = 0
+last_dy = 0
+
+while True:
+    signatureType, ignore, x, y, width, height = bus.read_i2c_block_data(I2C_ADDRESS, 0x50, 6)
+
+    if signatureType > 0:
+       # x = pixy.value(1)             # X-centroid of largest SIG1-object
+       # y = pixy.value(2)             # Y-centroid of largest SIG1-object
         dx = X_REF - x                # Error in reference to X_REF
         integral_x = integral_x + dx  # Calculate integral for PID
         derivative_x = dx - last_dx   # Calculate derivative for PID
