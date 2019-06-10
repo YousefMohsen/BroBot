@@ -2,7 +2,7 @@
 from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_D, SpeedPercent, MoveTank, MoveSteering
 
 from ev3dev2.sensor import INPUT_1, INPUT_4, INPUT_2, Sensor, INPUT_3
-from ev3dev2.sensor.lego import TouchSensor, GyroSensor, UltrasonicSensor
+from ev3dev2.sensor.lego import TouchSensor, GyroSensor, UltrasonicSensor, InfraredSensor
 from ev3dev2.led import Leds
 from ev3dev2.sound import Sound
 from ev3dev2.port import LegoPort
@@ -11,14 +11,17 @@ import time
 from smbus import SMBus
 
 
-
 sound = Sound()
 sound.beep()
-#sound.speak("David please shut up")
+#sound.speak("Boris shut up")
 gyro = GyroSensor(INPUT_2)
 motors = MoveTank(OUTPUT_D, OUTPUT_A)
 steering_drive = MoveSteering(OUTPUT_D, OUTPUT_A)
 us = UltrasonicSensor(INPUT_3)
+
+infraSensor = InfraredSensor(INPUT_4)
+infraSensor.mode = 'IR-PROX'
+
 # tank_pair = MoveTank(OUTPUT_D, OUTPUT_A)
 #init pixy 
 # get a Port object to control the input port
@@ -109,11 +112,11 @@ def turnBack(left,turnDegrees):
     motors.off()
     if(left):
         turnLeftByDegrees(turnDegrees)
-        motors.on_for_rotations(10, 10, -0.5)
+        motors.on_for_rotations(10, 10, -1)
         turnLeftByDegrees(turnDegrees)
     else:
         turnRightByDegrees(turnDegrees)
-        motors.on_for_rotations(10, 10, -0.5)
+        motors.on_for_rotations(10, 10, -1)
         turnRightByDegrees(turnDegrees)
 
     if(turnDegrees==90):
@@ -162,14 +165,6 @@ def main():
 
 
 
-#main()
-#turnBack(True,90)
-#turnRightByDegrees(90)
-#turnLeftByDegrees(90)
-#turnRightByDegrees(90)
-#turnLeftByDegrees(90)
-#while True:
- #   drive(30)
 def obstacleFound(x, y, width, height):
         motors.off()
         motors.on_for_rotations(10,10,0.5) #move 2 rotations back
@@ -197,7 +192,121 @@ def obstacleFound(x, y, width, height):
 
              
 
-while True:
-     lookForObstacle(1,obstacleFound)
+#while True:
+ #    lookForObstacle(1,obstacleFound)
      #drive(15)
 #obstacleFound(1,2,3,4)
+
+def driveAlongWall(speed):
+    prevDistance = 0
+    currentDistance = 0
+    interval = 1
+    
+    while True:
+        prevDistance = currentDistance
+        
+        #currentDistance = (infraSensor.proximity/100)*70
+        currentDistance = us.distance_centimeters
+
+        difference = prevDistance-currentDistance
+        print("currentDistance",currentDistance)
+        print("difference",difference)
+       # time.sleep(1)
+        while (-interval <= difference or difference >= interval):  
+            resetGyroAngle()
+            prevDistance = currentDistance
+            #currentDistance = (infraSensor.proximity/100)*70
+            currentDistance = us.distance_centimeters
+            difference = prevDistance-currentDistance
+            motors.on(left_speed=-difference, right_speed=difference)
+            gyro.wait_until_angle_changed_by(15)
+            motors.on_for_rotations(left_speed=-5, right_speed=-5, rotations=0.5)
+            #steering_drive.on_for_rotations(-difference, -5, 0.5)
+            #time.sleep(1)
+
+            '''steering = difference*10
+            if(steering>100):
+            steering = 100
+            elif(steering<-100):
+            steering=-100'''
+            print("difference",difference)  
+             
+  
+        if (-interval <= difference and difference <= interval):
+            #dont update prev 
+            print("drive stright")
+            drive(speed)
+        else:
+            motors.off()
+
+       # else:  #(difference>0):#
+             
+
+             #steering_drive.on_for_rotations(steering, -10, 0.2)
+            
+      #  elif(difference<0): #-dif go right
+       #     steering_drive.on_for_rotations(-difference, -5, 0.5)
+        
+        #if : 
+        
+
+    #while
+    #if infrarød distance > 20-30 cm
+
+    
+
+
+#def findGoal():
+    #find
+
+#main()
+#turnBack(True,90)
+#turnRightByDegrees(90)
+#turnLeftByDegrees(90)
+#turnRightByDegrees(90)
+#turnLeftByDegrees(90)
+#while True:
+    """cm = (infraSensor.proximity/100)*70
+    print("cm:",cm)
+   # print("cm shit",us.distance_centimeters)
+    time.sleep(1)"""
+ #   drive(30)
+
+#driveAlongWall(10)
+#steering_drive.on_for_rotations(-20, -10, 0.5)
+
+def newDriveAlongWall(dist):
+    #dist = 20
+    #while(True): 
+        while(20 < (infraSensor.proximity/100)*70):
+            print("us.distance_centimeters",us.distance_centimeters)
+            if(us.distance_centimeters < dist):
+                motors.on(-20, -15)
+            else:
+                if(us.distance_centimeters > dist):
+                    motors.on(-15, -20)
+                else:
+                    motors.on(-20, -20)
+
+def sweep():
+    tracksDistance = [8,80,45,45,80,8]
+    turnRight = True
+    #index = 0
+    for track in tracksDistance:
+       # print("track",track)
+        newDriveAlongWall(track)
+        if(turnRight):
+          turnDegrees =  turnBack(False, 90)
+          turnRight = False
+        else:
+           turnDegrees = turnBack(True, 90)
+           turnRight = True
+
+
+
+#newDriveAlongWall(8)
+#while True:
+    #motors.on(left_speed=-40, right_speed=-10)
+   #print("us.distance_centimeters", us.distance_centimeters)
+  # time.sleep(2)
+sweep()
