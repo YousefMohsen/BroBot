@@ -112,13 +112,14 @@ def turnBack(left,turnDegrees):
     motors.off()
     if(left):
         turnLeftByDegrees(turnDegrees)
-        motors.on_for_rotations(10, 10, -1)
+        motors.on_for_rotations(10, 10, -0.7)
         turnLeftByDegrees(turnDegrees)
     else:
         turnRightByDegrees(turnDegrees)
-        motors.on_for_rotations(10, 10, -1)
+        motors.on_for_rotations(10, 10, -0.7)
         turnRightByDegrees(turnDegrees)
 
+    motors.on_for_rotations(left_speed=-25, right_speed=-15, rotations=0.5)
     if(turnDegrees==90):
         return 85
     else:
@@ -194,66 +195,7 @@ def obstacleFound(x, y, width, height):
 
 #while True:
  #    lookForObstacle(1,obstacleFound)
-     #drive(15)
 #obstacleFound(1,2,3,4)
-
-def driveAlongWall(speed):
-    prevDistance = 0
-    currentDistance = 0
-    interval = 1
-    
-    while True:
-        prevDistance = currentDistance
-        
-        #currentDistance = (infraSensor.proximity/100)*70
-        currentDistance = us.distance_centimeters
-
-        difference = prevDistance-currentDistance
-        print("currentDistance",currentDistance)
-        print("difference",difference)
-       # time.sleep(1)
-        while (-interval <= difference or difference >= interval):  
-            resetGyroAngle()
-            prevDistance = currentDistance
-            #currentDistance = (infraSensor.proximity/100)*70
-            currentDistance = us.distance_centimeters
-            difference = prevDistance-currentDistance
-            motors.on(left_speed=-difference, right_speed=difference)
-            gyro.wait_until_angle_changed_by(15)
-            motors.on_for_rotations(left_speed=-5, right_speed=-5, rotations=0.5)
-            #steering_drive.on_for_rotations(-difference, -5, 0.5)
-            #time.sleep(1)
-
-            '''steering = difference*10
-            if(steering>100):
-            steering = 100
-            elif(steering<-100):
-            steering=-100'''
-            print("difference",difference)  
-             
-  
-        if (-interval <= difference and difference <= interval):
-            #dont update prev 
-            print("drive stright")
-            drive(speed)
-        else:
-            motors.off()
-
-       # else:  #(difference>0):#
-             
-
-             #steering_drive.on_for_rotations(steering, -10, 0.2)
-            
-      #  elif(difference<0): #-dif go right
-       #     steering_drive.on_for_rotations(-difference, -5, 0.5)
-        
-        #if : 
-        
-
-    #while
-    #if infrarød distance > 20-30 cm
-
-    
 
 
 #def findGoal():
@@ -275,10 +217,10 @@ def driveAlongWall(speed):
 #driveAlongWall(10)
 #steering_drive.on_for_rotations(-20, -10, 0.5)
 
-def newDriveAlongWall(dist):
+def driveAlongWall(dist):
     #dist = 20
     #while(True): 
-        while(20 < (infraSensor.proximity/100)*70):
+        while(25 < (infraSensor.proximity/100)*70):
             print("us.distance_centimeters",us.distance_centimeters)
             if(us.distance_centimeters < dist):
                 motors.on(-20, -15)
@@ -291,22 +233,26 @@ def newDriveAlongWall(dist):
 def sweep():
     tracksDistance = [8,80,45,45,80,8]
     turnRight = True
-    #index = 0
-    for track in tracksDistance:
+    for index, track in enumerate(tracksDistance, start=0):
        # print("track",track)
-        newDriveAlongWall(track)
-        if(turnRight):
-          turnDegrees =  turnBack(False, 90)
-          turnRight = False
-        else:
-           turnDegrees = turnBack(True, 90)
-           turnRight = True
+        driveAlongWall(track)
+        if(len(tracksDistance)-1!=index ):
+            if(turnRight):
+                turnBack(False, 90)
+                turnRight = False
+            else:
+                turnBack(True, 90)
+                turnRight = True
+        else: #find goal
+            motors.off()
+            sound.beep()
+        
 
 
 
-#newDriveAlongWall(8)
 #while True:
     #motors.on(left_speed=-40, right_speed=-10)
-   #print("us.distance_centimeters", us.distance_centimeters)
-  # time.sleep(2)
+  # print("us.distance_centimeters", us.distance_centimeters)
+ #  time.sleep(2)
+   
 sweep()
