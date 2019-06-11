@@ -106,9 +106,18 @@ def driveStraightGyro(power):
     #else:
     steering_drive.on(error, -power)
     
+def adjustDistanceToWall():
 
+    #If too far from wall, drive closer
+    if(15 < (infraSensor.proximity/100)*70):
+        while( 15 < (infraSensor.proximity/100)*70):
+            motors.on(-10, -10)
+    #if too close to wall, reverse.
+    else:
+        while(15 > (infraSensor.proximity/100)*70):
+            motors.on(10, 10)
 
-def turnBack(left,turnDegrees):
+def turnBack(left,turnDegrees,trackNumber):
     motors.off()
     if(left):
         turnLeftByDegrees(turnDegrees)
@@ -116,14 +125,24 @@ def turnBack(left,turnDegrees):
         turnLeftByDegrees(turnDegrees)
     else:
         turnRightByDegrees(turnDegrees)
-        motors.on_for_rotations(10, 10, -0.7)
+        
+        #At the last track, drive until only 20 cm from wall
+        if(trackNumber == 5):
+            adjustDistanceToWall()
+        else:
+            motors.on_for_rotations(10, 10, -0.7)
+        turnRightByDegrees(turnDegrees)       
+        '''
+        if(trackNumber == 5) and (40 > (infraSensor.proximity/100)*70): 
+            sound.beep()
+            motors.on_for_rotations(10, 10, -0.3)
+        else:
+            motors.on_for_rotations(10, 10, -0.7)
         turnRightByDegrees(turnDegrees)
+        '''
 
-    motors.on_for_rotations(left_speed=-25, right_speed=-25, rotations=1) 
-    if(turnDegrees==90):
-        return 85
-    else:
-       return 90
+    motors.on_for_rotations(left_speed=-50, right_speed=-50, rotations=1) 
+
 
 
 
@@ -219,7 +238,7 @@ def obstacleFound(x, y, width, height):
 
 def driveAlongWall(dist):
 
-    speed = -40
+    speed = -50
 
     #dist = 20
     #while(True): 
@@ -234,17 +253,19 @@ def driveAlongWall(dist):
                 motors.on(speed, speed)
 
 def sweep():
+    
     tracksDistance = [8,80,45,45,80,8]
+    
     turnRight = True
     for index, track in enumerate(tracksDistance, start=0):
        # print("track",track)
         driveAlongWall(track)
         if(len(tracksDistance)-1!=index ):
             if(turnRight):
-                turnBack(False, 90)
+                turnBack(False, 90,index+1)
                 turnRight = False
             else:
-                turnBack(True, 90)
+                turnBack(True, 90,index+1)
                 turnRight = True
         else: #find goal
             motors.off()
