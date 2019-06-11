@@ -119,7 +119,7 @@ def turnBack(left,turnDegrees):
         motors.on_for_rotations(10, 10, -0.7)
         turnRightByDegrees(turnDegrees)
 
-    motors.on_for_rotations(left_speed=-25, right_speed=-25, rotations=1)
+    motors.on_for_rotations(left_speed=-25, right_speed=-25, rotations=1) 
     if(turnDegrees==90):
         return 85
     else:
@@ -218,17 +218,20 @@ def obstacleFound(x, y, width, height):
 #steering_drive.on_for_rotations(-20, -10, 0.5)
 
 def driveAlongWall(dist):
+
+    speed = -40
+
     #dist = 20
     #while(True): 
-        while(25 < (infraSensor.proximity/100)*70):
-            print("us.distance_centimeters",us.distance_centimeters)
-            if(us.distance_centimeters < dist):
-                motors.on(-25, -20) #if too close to wall, drive away
+    while(25 < (infraSensor.proximity/100)*70):
+        print("us.distance_centimeters",us.distance_centimeters)
+        if(us.distance_centimeters < dist):
+            motors.on(speed, speed+5) #if too close to wall, drive away
+        else:
+            if(us.distance_centimeters > dist):
+                motors.on(speed+5, speed) #if too far from wall, drive closer
             else:
-                if(us.distance_centimeters > dist):
-                    motors.on(-20, -25) #if too far from wall, drive closer
-                else:
-                    motors.on(-25, -25)
+                motors.on(speed, speed)
 
 def sweep():
     tracksDistance = [8,80,45,45,80,8]
