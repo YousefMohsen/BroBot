@@ -17,10 +17,9 @@ sound.beep()
 gyro = GyroSensor(INPUT_2)
 motors = MoveTank(OUTPUT_D, OUTPUT_A)
 steering_drive = MoveSteering(OUTPUT_D, OUTPUT_A)
-us = UltrasonicSensor(INPUT_3)
-
-infraSensor = InfraredSensor(INPUT_4)
-infraSensor.mode = 'IR-PROX'
+usSide = UltrasonicSensor(INPUT_3)
+usFront = UltrasonicSensor(INPUT_4)
+#infraSensor.mode = 'IR-PROX'
 
 # tank_pair = MoveTank(OUTPUT_D, OUTPUT_A)
 #init pixy 
@@ -108,22 +107,23 @@ def driveStraightGyro(power):
     
 
 
-def turnBack(left,turnDegrees):
+def turnBack(left, nextTrack):
     motors.off()
     if(left):
-        turnLeftByDegrees(turnDegrees)
-        motors.on_for_rotations(10, 10, -0.7)
-        turnLeftByDegrees(turnDegrees)
+        turnLeftByDegrees(90)
+        while(usFront.distance_centimeters > nextTrack):
+           motors.on(-10,-10)
+       # motors.on_for_rotations(10, 10, -0.7)
+        turnLeftByDegrees(90)
     else:
-        turnRightByDegrees(turnDegrees)
-        motors.on_for_rotations(10, 10, -0.7)
-        turnRightByDegrees(turnDegrees)
+        turnRightByDegrees(90)
+        while(usFront.distance_centimeters > nextTrack):
+           motors.on(-10,-10)
+        #motors.on_for_rotations(10, 10, -0.7)
+        turnRightByDegrees(90)
 
-    motors.on_for_rotations(left_speed=-25, right_speed=-15, rotations=0.5)
-    if(turnDegrees==90):
-        return 85
-    else:
-       return 90
+    motors.on_for_rotations(left_speed=-15, right_speed=-15, rotations=0.5)
+   
 
 
 
@@ -142,26 +142,25 @@ def lookForObstacle(signatureToFind,callback):
         time.sleep(2)
         if(signatureType==signatureToFind):
             callback(x, y, width, height)
+ 
 
 
 
-
-
+#deprecated
 def main():
-    turnDegrees = 90
     turnRight = True
     resetGyroAngle()
     lookForObstacle()
     while True:
-        while(us.distance_centimeters > 20):
+        while(usFront.distance_centimeters > 20):
            # driveStraightGyro(30)
             drive(30)
 
         if(turnRight):
-          turnDegrees =  turnBack(False, turnDegrees)
+          turnBack(False)
           turnRight = False
         else:
-           turnDegrees = turnBack(True, turnDegrees)
+           turnBack(True)
            turnRight = True
 
 
@@ -198,7 +197,40 @@ def obstacleFound(x, y, width, height):
 #obstacleFound(1,2,3,4)
 
 
-#def findGoal():
+#def openCloseBallPort():
+def backToGoal(): #drive backward to goal
+       # print("usFront.distance_centimeters",usFront.distance_centimeters)
+        while(145 > usFront.distance_centimeters):
+            #TODO: calibrate with sideSensor
+            print("usFront.distance_centimeters",usFront.distance_centimeters)
+            if(usSide.distance_centimeters < 53):
+                     motors.on(5,7)
+            else:
+                if(usSide.distance_centimeters > 53):
+                    motors.on(7, 5) #if too far from wall, drive closer
+                else:
+                    motors.on(5, 5)
+            #sound.beep()
+
+def findGoal():
+    #from sweepend to find goal: both 23 
+    #back to goal: front sensor: 145 , side sensot: 55
+        #distToWall = 20 
+        turnRightByDegrees(90)
+        driveAlongWall(23,50,-15)
+        turnRightByDegrees(90)
+        #print("usFront.distance_centimeter",usFront.distance_centimeters)
+        backToGoal()
+            #back
+        #    print("im while")
+         #   motors.on(5,5) #if too close to wall, drive away
+        #motors.off()
+        #sound.beep()
+
+
+
+    
+
     #find
 
 #main()
@@ -208,51 +240,88 @@ def obstacleFound(x, y, width, height):
 #turnRightByDegrees(90)
 #turnLeftByDegrees(90)
 #while True:
-    """cm = (infraSensor.proximity/100)*70
-    print("cm:",cm)
+#cm = (infraSensor.proximity/100)*70
+ #   print("cm:",cm)
    # print("cm shit",us.distance_centimeters)
-    time.sleep(1)"""
+  #  time.sleep(1)"""
  #   drive(30)
 
 #driveAlongWall(10)
 #steering_drive.on_for_rotations(-20, -10, 0.5)
 
-def driveAlongWall(dist):
+def driveAlongWall(sideDist,frontDist, speed):
+    
+   # if(not driveForward):
+        
     #dist = 20
     #while(True): 
-        while(25 < (infraSensor.proximity/100)*70):
-            print("us.distance_centimeters",us.distance_centimeters)
-            if(us.distance_centimeters < dist):
+        #speed = -25
+        while(frontDist < usFront.distance_centimeters):
+           # print("usFront.distance_centimeters",usFront.distance_centimeters)
+            if(usSide.distance_centimeters < sideDist):
                 motors.on(-20, -15)
+               # motors.on(speed, speed+5) #if too close to wall, drive away
             else:
-                if(us.distance_centimeters > dist):
+                if(usSide.distance_centimeters > sideDist):
+                   # motors.on(speed+5, speed) #if too far from wall, drive closer
                     motors.on(-15, -20)
                 else:
+                    #motors.on(speed, speed)
                     motors.on(-20, -20)
+            #print("Side Distance", usSide.distance_centimeters )
+            #time.sleep(1) 
+        #bro
+        #motors.off()
+        #sound.beep()
+        #findGoal()
+
+
 
 def sweep():
-    tracksDistance = [8,80,45,45,80,8]
+    tracksDistance = [10,80,45,45,75,10] #[75,10]#
     turnRight = True
     for index, track in enumerate(tracksDistance, start=0):
        # print("track",track)
-        driveAlongWall(track)
-        if(len(tracksDistance)-1!=index ):
+        driveAlongWall(track,20,-20)
+        if(len(tracksDistance)-1!=index ):#dont turn around if last track
             if(turnRight):
-                turnBack(False, 90)
+                turnBack(False,tracksDistance[index+1])
                 turnRight = False
             else:
-                turnBack(True, 90)
+                turnBack(True,tracksDistance[index+1])
                 turnRight = True
         else: #find goal
-            motors.off()
-            sound.beep()
+         #   motors.off()
+             sound.beep()
+        #    findGoal()
         
 
-
-
-#while True:
-    #motors.on(left_speed=-40, right_speed=-10)
-  # print("us.distance_centimeters", us.distance_centimeters)
- #  time.sleep(2)
+#def releaseBalls():
+    
+def testUltraSonicSensor():
+    while True:
+        #motors.on(left_speed=-40, right_speed=-10)
+        print("Front sensor:", usFront.distance_centimeters)
+        print("Side sensor", usSide.distance_centimeters)
+        #lookForObstacle(1,obstacleFound)
+        time.sleep(2)
    
-sweep()
+#sweep()
+#driveAlongWall(10,20,-25)
+
+testUltraSonicSensor()
+#findGoal()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
