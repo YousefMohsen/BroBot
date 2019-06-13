@@ -111,18 +111,20 @@ def turnBack(left, nextTrack):
     motors.off()
     if(left):
         turnLeftByDegrees(90)
+        print("Nexttrack Left", nextTrack)
         while(usFront.distance_centimeters > nextTrack):
            motors.on(-10,-10)
        # motors.on_for_rotations(10, 10, -0.7)
         turnLeftByDegrees(90)
     else:
         turnRightByDegrees(90)
+        print("Nexttrack Right bro", nextTrack)
         while(usFront.distance_centimeters > nextTrack):
            motors.on(-10,-10)
         #motors.on_for_rotations(10, 10, -0.7)
         turnRightByDegrees(90)
 
-    motors.on_for_rotations(left_speed=-15, right_speed=-15, rotations=0.5)
+    #motors.on_for_rotations(left_speed=-15, right_speed=-15, rotations=0.5)
    
 
 
@@ -306,10 +308,10 @@ def testUltraSonicSensor():
         #lookForObstacle(1,obstacleFound)
         time.sleep(2)
    
-#sweep()
+sweep()
 #driveAlongWall(10,20,-25)
 
-testUltraSonicSensor()
+#testUltraSonicSensor()
 #findGoal()
 
 
