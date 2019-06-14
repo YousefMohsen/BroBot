@@ -281,16 +281,17 @@ def driveAlongWall(sideDist,frontDist, speed):
 
 def sweep():
     tracksDistance = [10,80,45,45,75,10] #[75,10]#
+    turnDistance = [80,123-30-45,45,123-30-75,10]
     turnRight = True
     for index, track in enumerate(tracksDistance, start=0):
        # print("track",track)
         driveAlongWall(track,20,-20)
         if(len(tracksDistance)-1!=index ):#dont turn around if last track
             if(turnRight):
-                turnBack(False,tracksDistance[index+1])
+                turnBack(False,turnDistance[index])
                 turnRight = False
             else:
-                turnBack(True,tracksDistance[index+1])
+                turnBack(True,turnDistance[index])
                 turnRight = True
         else: #find goal
          #   motors.off()
@@ -314,6 +315,8 @@ sweep()
 #testUltraSonicSensor()
 #findGoal()
 
+#[80,55]
+#fuld bredde bane 123
 
 
 
