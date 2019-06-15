@@ -317,7 +317,7 @@ def calcFrontDist(currentDistance, prevFrontDistance):
         return curFrontDistance
 
 def sweep():
-    tracksDistance = [10, 80,45,45,75,10] #[75,10]#
+    tracksDistance = [10,80,45,45,75,15] #[75,10]#
 #    turnDistance = [80,123-30-45,45,123-30-75,10]
     turnRight = True
     for index, track in enumerate(tracksDistance, start=0):
