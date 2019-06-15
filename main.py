@@ -271,7 +271,6 @@ def calcSideDistance(input1,desired):
         #dont do anythoing
         return desired
     else: 
-        log(" in calcSideDistance else")
         return input1
 
 def driveAlongWall(sideDist,frontDist, speed):
@@ -324,7 +323,7 @@ def sweep():
     for index, track in enumerate(tracksDistance, start=0):
         frontDistance = 40  
         if(len(tracksDistance)-1==index):
-            frontDistance = 40
+            frontDistance = 43
 
         #log("frontDistance"+frontDistance)
         #log("track"+track)
@@ -338,10 +337,10 @@ def sweep():
                 turnBack(True, index)
                 turnRight = True
         else: #find goal
-         #   motors.off()
+             motors.off()
              sound.beep()
         #    findGoal()
-    findGoal()    
+   # findGoal()    
 
 #def releaseBalls():
     
