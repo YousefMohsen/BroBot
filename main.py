@@ -267,7 +267,7 @@ def calcSideDistance(input1,desired):
     log("diff: "+str(diff))
     log("input1: "+str(input1))
     log("desired: "+str(desired))
-    if(diff> 10):
+    if(diff> 15):
         #dont do anythoing
         return desired
     else: 
