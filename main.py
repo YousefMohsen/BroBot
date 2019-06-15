@@ -129,7 +129,7 @@ def turnBack(left, nextTrackIndex):
         turnRightByDegrees(90)
         #log("Nexttrack Right: "+ str(nextTrack))
         if(nextTrackIndex == 4):
-            motors.on_for_rotations(10, 10, -0.4)
+            motors.on_for_rotations(10, 10, -0.1)
         else:
             motors.on_for_rotations(10, 10, -0.7)
         turnRightByDegrees(90)
@@ -321,9 +321,10 @@ def sweep():
 #    turnDistance = [80,123-30-45,45,123-30-75,10]
     turnRight = True
     for index, track in enumerate(tracksDistance, start=0):
-        frontDistance = 40  
+        frontDistance = 45  
         if(len(tracksDistance)-1==index):
-            frontDistance = 43
+            #I would remove this - Brovid
+            frontDistance = 53
 
         #log("frontDistance"+frontDistance)
         #log("track"+track)
