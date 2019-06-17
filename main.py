@@ -284,19 +284,27 @@ def driveAlongWall(sideDist,frontDist, speed):
 
     while(frontDist < usFront.distance_centimeters):
         #log("usFront.distance_centimeters"+usFront.distance_centimeters)
-        sideDistance = calcSideDistance(usSide.distance_centimeters,sideDist)
-        if(sideDistance < sideDist):
+       # sideDistance = calcSideDistance(usSide.distance_centimeters,sideDist)
+        #log("Front sensor: "+ str(usFront.distance_centimeters))
+        log("Side sensor: "+str(  usSide.distance_centimeters))
+        #time.sleep(2)
+
+        sideDistance = usSide.distance_centimeters
+        
+        if(usSide.distance_centimeters < sideDist):
             motors.on(-20, -15)
-            log('Driving away from wall')
+            
+            #log('Driving away from wall')
             # motors.on(speed, speed+5) #if too close to wall, drive away
         else:
             if(sideDistance > sideDist):
                 # motors.on(speed+5, speed) #if too far from wall, drive closer
-                log('Driving closer to wall')
+                #log('Driving closer to wall')
+                
                 motors.on(-15, -20)
             else:
                 #motors.on(speed, speed)
-                log('Drive straight')
+                #log('Drive straight')
                 motors.on(-20, -20)
                 #print("Side Distance", usSide.distance_centimeters )
                 #time.sleep(1) 
@@ -317,33 +325,15 @@ def calcFrontDist(currentDistance, prevFrontDistance):
         return curFrontDistance
 
 def sweep():
-    tracksDistance = [10,80,45,45,75,15] #[75,10]#
-#    turnDistance = [80,123-30-45,45,123-30-75,10]
-    turnRight = True
+    tracksDistance = [15, 10 ,15 ,10]  #[75,10]#
+
     for index, track in enumerate(tracksDistance, start=0):
         frontDistance = 45  
-        if(len(tracksDistance)-1==index):
-            #I would remove this - Brovid
-            frontDistance = 53
-
-        #log("frontDistance"+frontDistance)
-        #log("track"+track)
-
+        
         driveAlongWall(track,frontDistance,-20)
-        if(len(tracksDistance)-1!=index ):#dont turn around if last track
-            if(turnRight):
-                turnBack(False, index)
-                turnRight = False
-            else:
-                turnBack(True, index)
-                turnRight = True
-        else: #find goal
-             motors.off()
-             sound.beep()
-        #    findGoal()
-   # findGoal()    
-
-#def releaseBalls():
+        turnRightByDegrees(90)
+         
+ 
     
 def testUltraSonicSensor():
     while True:
@@ -352,9 +342,9 @@ def testUltraSonicSensor():
         log("Side sensor: "+str(  usSide.distance_centimeters))
         #log('Side:'+str(usSide.distance_centimeters), 'Front'+str(usFront.distance_centimeters))
         #lookForObstacle(1,obstacleFound)
-        time.sleep(2)
+        #time.sleep(2)
    
-#sweep()
+sweep()
 #driveAlongWall(10,20,-25)
 
 #testUltraSonicSensor()
@@ -363,6 +353,7 @@ def testUltraSonicSensor():
 #[80,55]
 #fuld bredde bane 123
 #turnLeftByDegrees(90) #bro bro
+
 
 
 def trunTest():
@@ -375,7 +366,7 @@ def trunTest():
 
 #trunTest() 
 
-sweep()
+#sweep()
 
 #motors.on_for_rotations(left_speed=-30, right_speed=-30, rotations=7)
 
