@@ -292,7 +292,7 @@ def driveAlongWall(sideDist,frontDist, speed):
         sideDistance = usSide.distance_centimeters
         
         if(usSide.distance_centimeters < sideDist):
-            motors.on(-20, -15)
+            motors.on(-15, -10)
             
             #log('Driving away from wall')
             # motors.on(speed, speed+5) #if too close to wall, drive away
@@ -301,14 +301,15 @@ def driveAlongWall(sideDist,frontDist, speed):
                 # motors.on(speed+5, speed) #if too far from wall, drive closer
                 #log('Driving closer to wall')
                 
-                motors.on(-15, -20)
+                motors.on(-10, -15)
             else:
                 #motors.on(speed, speed)
                 #log('Drive straight')
-                motors.on(-20, -20)
+                motors.on(-10, -10)
                 #print("Side Distance", usSide.distance_centimeters )
                 #time.sleep(1) 
             #motors.off()
+
             #sound.beep()
             #findGoal()
 
@@ -338,16 +339,16 @@ def sweep():
 def testUltraSonicSensor():
     while True:
         #motors.on(left_speed=-40, right_speed=-10)
-        log("Front sensor: "+ str(usFront.distance_centimeters))
+        #log("Front sensor: "+ str(usFront.distance_centimeters))
         log("Side sensor: "+str(  usSide.distance_centimeters))
         #log('Side:'+str(usSide.distance_centimeters), 'Front'+str(usFront.distance_centimeters))
         #lookForObstacle(1,obstacleFound)
         #time.sleep(2)
    
-sweep()
+#sweep()
 #driveAlongWall(10,20,-25)
 
-#testUltraSonicSensor()
+testUltraSonicSensor()
 #findGoal()
 
 #[80,55]
