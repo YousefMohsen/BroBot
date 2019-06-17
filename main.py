@@ -319,14 +319,14 @@ def calcFrontDist(currentDistance, prevFrontDistance):
         return curFrontDistance
 
 def sweep():
-    tracksDistance = [10, 10 ,10 ,10]  #[75,10]#
+    tracksDistance = [7, 7 ,7 ,7]  #[75,10]#
 
     for index, track in enumerate(tracksDistance, start=0):
         frontDistance = 35
         
         driveAlongWall(track,frontDistance,-20)
         turnRightByDegrees(65)
-        motors.on_for_rotations(left_speed=-15, right_speed=-10, rotations=0.2)
+        motors.on_for_rotations(left_speed=-15, right_speed=-13, rotations=1)
          
  
     
