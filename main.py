@@ -269,7 +269,7 @@ def calcSideDistance(input1,desired):
     log("desired: "+str(desired))
     if(diff > 20):
         #dont do anything
-        return desired
+        return 0
     else: 
         return input1
 
@@ -284,7 +284,7 @@ def driveAlongWall(sideDist,frontDist, speed):
 
         #sideDistance = usSide.distance_centimeters
         
-        if(usSide.distance_centimeters < sideDist):
+        if(sideDistance < sideDist):
             motors.on(-15, -10)
             
             log('Driving away from wall')
@@ -319,13 +319,14 @@ def calcFrontDist(currentDistance, prevFrontDistance):
         return curFrontDistance
 
 def sweep():
-    tracksDistance = [12, 12 ,12 ,12]  #[75,10]#
+    tracksDistance = [10, 10 ,10 ,10]  #[75,10]#
 
     for index, track in enumerate(tracksDistance, start=0):
-        frontDistance = 35  
+        frontDistance = 35
         
         driveAlongWall(track,frontDistance,-20)
-        turnRightByDegrees(50)
+        turnRightByDegrees(65)
+        motors.on_for_rotations(left_speed=-15, right_speed=-10, rotations=0.2)
          
  
     
