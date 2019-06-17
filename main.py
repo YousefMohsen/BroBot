@@ -325,7 +325,7 @@ def sweep():
         frontDistance = 35  
         
         driveAlongWall(track,frontDistance,-20)
-        turnRightByDegrees(90)
+        turnRightByDegrees(50)
          
  
     
