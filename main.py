@@ -69,7 +69,7 @@ def turnRightByDegrees(degrees):
     log("moveForwardGyro")
     resetGyroAngle()
 
-    turnSpeed = -20
+    turnSpeed = -5
     # Connect gyro sensor.
 
     # Start the left motor with speed 40% to initiate a medium turn right.
@@ -267,44 +267,37 @@ def calcSideDistance(input1,desired):
     log("diff: "+str(diff))
     log("input1: "+str(input1))
     log("desired: "+str(desired))
-    if(diff> 15):
-        #dont do anythoing
+    if(diff > 20):
+        #dont do anything
         return desired
     else: 
         return input1
 
 def driveAlongWall(sideDist,frontDist, speed):
     
-   # if(not driveForward):
-        
-    #dist = 20
-    #while(True): 
-        #speed = -25
-
-
     while(frontDist < usFront.distance_centimeters):
         #log("usFront.distance_centimeters"+usFront.distance_centimeters)
-       # sideDistance = calcSideDistance(usSide.distance_centimeters,sideDist)
+        sideDistance = calcSideDistance(usSide.distance_centimeters,sideDist)
         #log("Front sensor: "+ str(usFront.distance_centimeters))
         log("Side sensor: "+str(  usSide.distance_centimeters))
         #time.sleep(2)
 
-        sideDistance = usSide.distance_centimeters
+        #sideDistance = usSide.distance_centimeters
         
         if(usSide.distance_centimeters < sideDist):
             motors.on(-15, -10)
             
-            #log('Driving away from wall')
+            log('Driving away from wall')
             # motors.on(speed, speed+5) #if too close to wall, drive away
         else:
             if(sideDistance > sideDist):
                 # motors.on(speed+5, speed) #if too far from wall, drive closer
-                #log('Driving closer to wall')
+                log('Driving closer to wall')
                 
                 motors.on(-10, -15)
             else:
                 #motors.on(speed, speed)
-                #log('Drive straight')
+                log('Drive straight')
                 motors.on(-10, -10)
                 #print("Side Distance", usSide.distance_centimeters )
                 #time.sleep(1) 
@@ -326,10 +319,10 @@ def calcFrontDist(currentDistance, prevFrontDistance):
         return curFrontDistance
 
 def sweep():
-    tracksDistance = [15, 10 ,15 ,10]  #[75,10]#
+    tracksDistance = [12, 12 ,12 ,12]  #[75,10]#
 
     for index, track in enumerate(tracksDistance, start=0):
-        frontDistance = 45  
+        frontDistance = 35  
         
         driveAlongWall(track,frontDistance,-20)
         turnRightByDegrees(90)
@@ -348,7 +341,7 @@ def testUltraSonicSensor():
 #sweep()
 #driveAlongWall(10,20,-25)
 
-testUltraSonicSensor()
+#testUltraSonicSensor()
 #findGoal()
 
 #[80,55]
@@ -367,7 +360,8 @@ def trunTest():
 
 #trunTest() 
 
-#sweep()
+while(True):
+    sweep()
 
 #motors.on_for_rotations(left_speed=-30, right_speed=-30, rotations=7)
 
