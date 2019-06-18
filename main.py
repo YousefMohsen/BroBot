@@ -152,19 +152,20 @@ def shake():
 
 
 def findGoal():
-    # from sweepend to find goal: both 23
-    # back to goal: front sensor: 145 , side sensot: 55
-    #distToWall = 20
-    turnRightByDegrees(90)
-    driveAlongWall(15, 50, -15)
-    turnRightByDegrees(90)
+    # turnRightByDegrees(90)
+    # driveAlongWall(15, 50, -15)
+    # turnRightByDegrees(90)
     # print("usFront.distance_centimeter",usFront.distance_centimeters)
-    backToGoal()
-    # back
-    #    print("im while")
-    #   motors.on(5,5) #if too close to wall, drive away
-    # motors.off()
-    # sound.beep()
+    # backToGoal()
+    goalFound = False
+    tracksDistance = [7, 7, 7, 7]  # [75,10]#
+    for index, track in enumerate(tracksDistance, start=0):
+        frontDistance = 35
+        goalFound = driveAlongWallToGoal(7, 35, -20)
+        if(goalFound):
+            break
+        turnRightByDegrees(65)
+        motors.on_for_rotations(left_speed=-15, right_speed=-13, rotations=1)
 
 
 def calcSideDistance(input1, desired):
@@ -179,12 +180,40 @@ def calcSideDistance(input1, desired):
     else:
         return input1
 
-
 def driveAlongWall(sideDist, frontDist, speed):
 
     while(frontDist < usFront.distance_centimeters):
         sideDistance = calcSideDistance(usSide.distance_centimeters, sideDist)
         log("Side sensor: "+str(usSide.distance_centimeters))
+
+        if(sideDistance < sideDist):
+            motors.on(-15, -10)
+            # if too close to wall, drive away
+            log('Driving away from wall')
+
+        else:
+            if(sideDistance > sideDist):
+                # motors.on(speed+5, speed) #if too far from wall, drive closer
+                log('Driving closer to wall')
+
+                motors.on(-10, -15)
+            else:
+                log('Drive straight')
+                motors.on(-10, -10)
+
+
+def driveAlongWallToGoal(sideDist, frontDist, speed):
+  #  goalFound = False
+    while(frontDist < usFront.distance_centimeters):
+        log("Front sensor: "+str(usFront.distance_centimeters))
+
+        sideDistance = calcSideDistance(usSide.distance_centimeters, sideDist)
+        log("Side sensor: "+str(usSide.distance_centimeters))
+        if(sideDistance==0):
+            sound.beep()
+            motors.stop()
+            log("GOOOOOOOAAAAAAAAL")
+            return True
 
         if(sideDistance < sideDist):
             motors.on(-15, -10)
@@ -254,7 +283,8 @@ def trunTest():
 #openBallStoragePort()
 #time.sleep(1)
 #closeBallStoragePort()
-shake()
+#shake()
+findGoal()
 #while(True):
     #sweep()
 
