@@ -171,10 +171,10 @@ def findGoal():
 
 def calcSideDistance(input1, desired):
     diff = abs(desired - input1)
-    log("------")
-    log("diff: "+str(diff))
-    log("input1: "+str(input1))
-    log("desired: "+str(desired))
+  #  log("------")
+  #  log("diff: "+str(diff))
+  #  log("input1: "+str(input1))
+  #  log("desired: "+str(desired))
     if(diff > 20):
         # dont do anything
         return 0
@@ -217,14 +217,10 @@ def calcFrontDist(currentDistance, prevFrontDistance):
         return curFrontDistance
 
 
-def sweep():
-    tracksDistance = [7, 7]  # [75,10]#
-    sound.speak("This is gonna take a lot of balls")
-    for index, track in enumerate(tracksDistance, start=0):
+def sweepWall(trackDistance, doLastTurn):
         frontDistance = 35
-
-        driveAlongWall(track, frontDistance, -20)
-        if(index!=len(tracksDistance)-1): #if not lastsweep TODO: possible bug
+        driveAlongWall(trackDistance, frontDistance, -20)
+        if (doLastTurn):
             turnRightByDegrees(65)
             motors.on_for_rotations(left_speed=-15, right_speed=-13, rotations=1)
 
@@ -259,10 +255,10 @@ def trunTest():
 #time.sleep(1)
 #closeBallStoragePort()
 #shake()
-sweep()
+#sweep()
 #backToDistance(138,0)
 
-findGoal()
+#findGoal()
 #while(True):
     #sweep()
 
@@ -276,3 +272,19 @@ findGoal()
 #137 til tavle
 
 #65 front distance når den ejaculater bolde
+
+def main():
+    counter = 0
+    isLastSweep = True
+
+    while(counter != 3):
+        sweepWall(7,isLastSweep)
+        counter = counter + 1
+        log("IN WHILE loop")
+
+    isLastSweep = False
+    sweepWall(7, isLastSweep)
+    log("in last sweep !")
+    findGoal()
+    
+main()
