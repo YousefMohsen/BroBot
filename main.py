@@ -125,19 +125,7 @@ def obstacleFound(x, y, width, height):
     # motors.on_for_rotations(-10,-10,2) #move 6 rotations back
 
 
-def backToGoal():  # drive backward to goal
-       # print("usFront.distance_centimeters",usFront.distance_centimeters)
-    while(145 > usFront.distance_centimeters):
-        # TODO: calibrate with sideSensor
-        log("usFront.distance_centimeters"+usFront.distance_centimeters)
-        if(usSide.distance_centimeters < 51):
-            motors.on(7, 5)
-        else:
-            if(usSide.distance_centimeters > 51):
-                motors.on(5, 7)  # if too far from wall, drive closer
-            else:
-                motors.on(5, 5)
-        # sound.beep()
+
 
 def openBallStoragePort():
     backMotor.on_for_rotations(-5,0.1)
@@ -150,22 +138,35 @@ def shake():
         motors.on_for_rotations(18, 20, 0.04)
         motors.on_for_rotations(-20, -18, 0.04)
 
+def backToDistance(frontDist,sideDist):  # drive backward to goal
+       # print("usFront.distance_centimeters",usFront.distance_centimeters)
+    log("backToDistance.FrontSensot: "+ str(usFront.distance_centimeters))
+    while(frontDist > usFront.distance_centimeters):
+        motors.on(5, 5)
+        # TODO: calibrate with sideSensor
+        log("backToDistance.FrontSensot: "+ str(usFront.distance_centimeters))
+      #  if(usSide.distance_centimeters < sideDist):
+      #      motors.on(7, 5)
+      #  else:
+      #      if(usSide.distance_centimeters > sideDist):
+       #         motors.on(5, 7)  # if too far from wall, drive closer
+       #     else:
+                #motors.on(5, 5)
+        # sound.beep()
 
 def findGoal():
-    # turnRightByDegrees(90)
+    backToDistance(65,10)
     # driveAlongWall(15, 50, -15)
-    # turnRightByDegrees(90)
+    turnRightByDegrees(90)
+    #backToDistance(135,0)
+    motors.on_for_rotations(left_speed=5, right_speed=5, rotations=0.7)
+    openBallStoragePort() 
+    shake()
     # print("usFront.distance_centimeter",usFront.distance_centimeters)
-    # backToGoal()
-    goalFound = False
-    tracksDistance = [7, 7, 7, 7]  # [75,10]#
-    for index, track in enumerate(tracksDistance, start=0):
-        frontDistance = 35
-        goalFound = driveAlongWallToGoal(7, 35, -20)
-        if(goalFound):
-            break
-        turnRightByDegrees(65)
-        motors.on_for_rotations(left_speed=-15, right_speed=-13, rotations=1)
+    # 
+
+    sound.speak("I found a goooooooooal ")
+
 
 
 def calcSideDistance(input1, desired):
@@ -202,34 +203,6 @@ def driveAlongWall(sideDist, frontDist, speed):
                 motors.on(-10, -10)
 
 
-def driveAlongWallToGoal(sideDist, frontDist, speed):
-  #  goalFound = False
-    while(frontDist < usFront.distance_centimeters):
-        log("Front sensor: "+str(usFront.distance_centimeters))
-
-        sideDistance = calcSideDistance(usSide.distance_centimeters, sideDist)
-        log("Side sensor: "+str(usSide.distance_centimeters))
-        if(sideDistance==0):
-            sound.beep()
-            motors.stop()
-            log("GOOOOOOOAAAAAAAAL")
-            return True
-
-        if(sideDistance < sideDist):
-            motors.on(-15, -10)
-            # if too close to wall, drive away
-            log('Driving away from wall')
-
-        else:
-            if(sideDistance > sideDist):
-                # motors.on(speed+5, speed) #if too far from wall, drive closer
-                log('Driving closer to wall')
-
-                motors.on(-10, -15)
-            else:
-                log('Drive straight')
-                motors.on(-10, -10)
-
 
 def calcFrontDist(currentDistance, prevFrontDistance):
     if prevFrontDistance is None:
@@ -245,19 +218,21 @@ def calcFrontDist(currentDistance, prevFrontDistance):
 
 
 def sweep():
-    tracksDistance = [7, 7, 7, 7]  # [75,10]#
+    tracksDistance = [7, 7]  # [75,10]#
+    sound.speak("This is gonna take a lot of balls")
     for index, track in enumerate(tracksDistance, start=0):
         frontDistance = 35
 
         driveAlongWall(track, frontDistance, -20)
-        turnRightByDegrees(65)
-        motors.on_for_rotations(left_speed=-15, right_speed=-13, rotations=1)
+        if(index!=len(tracksDistance)-1): #if not lastsweep TODO: possible bug
+            turnRightByDegrees(65)
+            motors.on_for_rotations(left_speed=-15, right_speed=-13, rotations=1)
 
 
 def testUltraSonicSensor():
     while True:
         #motors.on(left_speed=-40, right_speed=-10)
-        #log("Front sensor: "+ str(usFront.distance_centimeters))
+        log("Front sensor: "+ str(usFront.distance_centimeters))
         log("Side sensor: "+str(usSide.distance_centimeters))
         #log('Side:'+str(usSide.distance_centimeters), 'Front'+str(usFront.distance_centimeters))
         # lookForObstacle(1,obstacleFound)
@@ -266,7 +241,7 @@ def testUltraSonicSensor():
 # sweep()
 # driveAlongWall(10,20,-25)
 
-# testUltraSonicSensor()
+#testUltraSonicSensor()
 # findGoal()
 
 
@@ -284,6 +259,9 @@ def trunTest():
 #time.sleep(1)
 #closeBallStoragePort()
 #shake()
+sweep()
+#backToDistance(138,0)
+
 findGoal()
 #while(True):
     #sweep()
@@ -293,3 +271,8 @@ findGoal()
 # while(65 < usFront.distance_centimeters):
 #     log(str(usFront.distance_centimeters))
 #     motors.on(left_speed=-30, right_speed=-30)
+
+#68 til stol
+#137 til tavle
+
+#65 front distance når den ejaculater bolde
