@@ -273,18 +273,27 @@ def trunTest():
 
 #65 front distance når den ejaculater bolde
 
-def main():
+#false: dont turn in last 
+#true: trun 
+def sweep(turnOnLastSweep):
     counter = 0
     isLastSweep = True
-
     while(counter != 3):
         sweepWall(7,isLastSweep)
         counter = counter + 1
         log("IN WHILE loop")
 
-    isLastSweep = False
+    
+    if(not turnOnLastSweep):
+        isLastSweep = False
+
     sweepWall(7, isLastSweep)
-    log("in last sweep !")
-    findGoal()
+   
+
+def main():
+        sweep(True)
+        sweep(False)
+        findGoal()
+
     
 main()
