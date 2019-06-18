@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_D, SpeedPercent, MoveTank, MoveSteering
+from ev3dev2.motor import LargeMotor, OUTPUT_A,OUTPUT_B, OUTPUT_D, SpeedPercent, MoveTank, MoveSteering, MediumMotor
 
 from ev3dev2.sensor import INPUT_1, INPUT_4, INPUT_2, Sensor, INPUT_3
 from ev3dev2.sensor.lego import TouchSensor, GyroSensor, UltrasonicSensor, InfraredSensor
@@ -22,6 +22,7 @@ sound.beep()
 gyro = GyroSensor(INPUT_2)
 motors = MoveTank(OUTPUT_D, OUTPUT_A)
 steering_drive = MoveSteering(OUTPUT_D, OUTPUT_A)
+backMotor = MediumMotor(OUTPUT_B)
 usSide = UltrasonicSensor(INPUT_3)
 usFront = UltrasonicSensor(INPUT_4)
 #infraSensor.mode = 'IR-PROX'
@@ -138,6 +139,17 @@ def backToGoal():  # drive backward to goal
                 motors.on(5, 5)
         # sound.beep()
 
+def openBallStoragePort():
+    backMotor.on_for_rotations(-5,0.1)
+
+def closeBallStoragePort():
+    backMotor.on_for_rotations(5,0.1)
+
+def shake():
+    while(True):
+        motors.on_for_rotations(18, 20, 0.04)
+        motors.on_for_rotations(-20, -18, 0.04)
+
 
 def findGoal():
     # from sweepend to find goal: both 23
@@ -239,9 +251,12 @@ def trunTest():
 
 # trunTest()
 
-
-while(True):
-    sweep()
+#openBallStoragePort()
+#time.sleep(1)
+#closeBallStoragePort()
+shake()
+#while(True):
+    #sweep()
 
 #motors.on_for_rotations(left_speed=-30, right_speed=-30, rotations=7)
 
