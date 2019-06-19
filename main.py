@@ -10,6 +10,8 @@ from ev3dev2.display import Display
 import ev3dev2.fonts as fonts
 from sys import stderr
 import time
+import threading
+
 
 from smbus import SMBus
 lcd = Display()
@@ -91,20 +93,18 @@ def turnLeftByDegrees(degrees):
     #tank_pair.on_for_rotations(left_speed=50, right_speed=50, rotations=1)
 
 
-def lookForObstacle(signatureToFind, callback):
+def lookForObstacle(signatureToFind):
        # signatureToFind = 1
     signatureType, ignore, x, y, width, height = bus.read_i2c_block_data(
         I2C_ADDRESS, 0x50, 6)
     # do stuff with coordinates
-    log("Signature " + signatureType)
-    log("x: "+x)
-    log("y: " + y)
-    log("width: " + width)
-    log("height: " + height)
+    log("Signature " + str(signatureType))
+    log("x: "+str(x))
+    log("y: " + str(y))
+    log("width: " + str(width))
+    log("height: " + str(height))
     log("-----------\n")
     time.sleep(2)
-    if(signatureType == signatureToFind):
-        callback(x, y, width, height)
 
 
 def obstacleFound(x, y, width, height):
@@ -290,10 +290,41 @@ def sweep(turnOnLastSweep):
     sweepWall(7, isLastSweep)
    
 
+lastCoordinate = [0, 0]
+
+
+def countBallsCollected(counter):
+    signatureType, ignore, x, y, width, height = bus.read_i2c_block_data(
+        I2C_ADDRESS, 0x50, 6)
+    # log("Signature " + str(signatureType))
+    log("x: "+str(x))
+    log("y: " + str(y))
+    # log("width: " + str(width))
+    # log("height: " + str(height))
+    # log("----------\n")
+    # time.sleep(2)
+    
+# tæl ikke igen hvis y er mellem 220-250
+
+    if(y > 245):
+        counter = counter + 1
+        time.sleep(2)
+        return counter
+    else: 
+        return counter
+
+def ballsCounter():
+    counter = 0
+
+    while(True):
+        counter =  countBallsCollected(counter)
+        log("Counter " +  str(counter))
+
 def main():
         sweep(True)
         sweep(False)
         findGoal()
 
-    
+threading.Thread(target=ballsCounter).start()
 main()
+
