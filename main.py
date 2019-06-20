@@ -77,7 +77,7 @@ def turnRightByDegrees(degrees):
 def turnLeftByDegrees(degrees):
     log("moveForwardGyro")
     resetGyroAngle()
-    turnSpeed = -20
+    turnSpeed = -15
     # Connect gyro sensor.
 
     # Start the left motor with speed 40% to initiate a medium turn right.
@@ -155,13 +155,14 @@ def backToDistance(frontDist,sideDist):  # drive backward to goal
         # sound.beep()
 
 def findGoal():
-    backToDistance(65,10)
+    resetGyroAngle()
+    backToDistance(72,10)
     # driveAlongWall(15, 50, -15)
-    turnRightByDegrees(90)
+    turnRightByDegrees(85)
     #backToDistance(135,0)
     motors.on_for_rotations(left_speed=5, right_speed=5, rotations=0.7)
-    openBallStoragePort() 
-    shake()
+   # openBallStoragePort() 
+    #shake()
     # print("usFront.distance_centimeter",usFront.distance_centimeters)
     # 
 
@@ -201,6 +202,7 @@ def driveAlongWall(sideDist, frontDist, speed):
             else:
                 log('Drive straight')
                 motors.on(-10, -10)
+    motors.off()
 
 
 
@@ -221,8 +223,8 @@ def sweepWall(trackDistance, doLastTurn):
         frontDistance = 35
         driveAlongWall(trackDistance, frontDistance, -20)
         if (doLastTurn):
-            turnRightByDegrees(65)
-            motors.on_for_rotations(left_speed=-15, right_speed=-13, rotations=1)
+            turnRightByDegrees(30)
+            motors.on_for_rotations(left_speed=-15, right_speed=-6, rotations=1)
 
 
 def testUltraSonicSensor():
@@ -275,18 +277,22 @@ def trunTest():
 
 #false: dont turn in last 
 #true: trun 
-def sweep(turnOnLastSweep):
+def sweep(turnOnLastSweep, firstSweep):
     counter = 0
     isLastSweep = True
-    while(counter != 3):
+    maxRounds = 3
+    if(firstSweep):
+        maxRounds= 4
+        
+    while(counter != maxRounds):
         sweepWall(7,isLastSweep)
         counter = counter + 1
-        log("IN WHILE loop")
+        log("IN WHILE loop"+str(counter))
 
     
     if(not turnOnLastSweep):
         isLastSweep = False
-
+    log("LAST SWEEP")
     sweepWall(7, isLastSweep)
    
 
@@ -297,8 +303,8 @@ def countBallsCollected(counter):
     signatureType, ignore, x, y, width, height = bus.read_i2c_block_data(
         I2C_ADDRESS, 0x50, 6)
     # log("Signature " + str(signatureType))
-    log("x: "+str(x))
-    log("y: " + str(y))
+  #  log("x: "+str(x))
+   # log("y: " + str(y))
     # log("width: " + str(width))
     # log("height: " + str(height))
     # log("----------\n")
@@ -318,13 +324,32 @@ def ballsCounter():
 
     while(True):
         counter =  countBallsCollected(counter)
-        log("Counter " +  str(counter))
+     #   log("Counter " +  str(counter))
+
+
 
 def main():
-        sweep(True)
-        sweep(False)
-        findGoal()
-
-threading.Thread(target=ballsCounter).start()
+        ballsRemaining = 2
+        #threading.Thread(target=ballsCounter).start()
+        motors.on_for_rotations(left_speed=10, right_speed=10, rotations=0.7)
+        while(ballsRemaining>0):
+            #sweep(True)
+            turnLeftByDegrees(90)
+            sweep(turnOnLastSweep= True , firstSweep = True)
+            sweep( turnOnLastSweep= False , firstSweep = False)
+            findGoal()
+            openBallStoragePort() 
+            time.sleep(15)
+            closeBallStoragePort()
+            motors.on_for_rotations(left_speed=-10, right_speed=-10, rotations=0.7)
+            ballsRemaining = ballsRemaining-1
+            #motors.on_for_rotations(left_speed=-10, right_speed=-10, rotations=1.5)
+        sound.beep()
+        sound.speak("I have found all balls.")
+        motors.off()
+    
+motors.on_for_rotations(left_speed=-10, right_speed=-10, rotations=1.6)
 main()
+#sweep(True)
+#sweep(False)
 
