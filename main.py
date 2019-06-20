@@ -328,18 +328,29 @@ def ballsCounter():
 
 
 def timer():
-        start = timeit.timeit()
+        start = time.time()
 
         while(True):
-            if(480 == timeit.timeit() - start):
+            log(time.time() - start)
+            if(5 < time.time() - start):
                 sound.speak("Eight minutes has passed")
                 sound.beep()
+                sound.beep()
+                sound.beep()
+                sound.beep()
+                sound.beep()
+                sound.beep()
+                sound.beep()
+
+                break
 
 
 
 def main():
-        ballsRemaining = 2
+
+        #ballsRemaining = 2
         #threading.Thread(target=ballsCounter).start()
+        threading.Thread(target=timer).start()
         motors.on_for_rotations(left_speed=10, right_speed=10, rotations=0.7)
         while(ballsRemaining>0):
             #sweep(True)
@@ -358,9 +369,7 @@ def main():
         motors.off()
     
 #motors.on_for_rotations(left_speed=-10, right_speed=-10, rotations=1.6)
-#main()
-threading.Thread(target=timer).start()
-
+main()
 #sweep(True)
 #sweep(False)
 
