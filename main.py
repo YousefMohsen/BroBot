@@ -327,6 +327,15 @@ def ballsCounter():
      #   log("Counter " +  str(counter))
 
 
+def timer():
+        start = timeit.timeit()
+
+        while(True):
+            if(480 == timeit.timeit() - start):
+                sound.speak("Eight minutes has passed")
+                sound.beep()
+
+
 
 def main():
         ballsRemaining = 2
@@ -348,8 +357,10 @@ def main():
         sound.speak("I have found all balls.")
         motors.off()
     
-motors.on_for_rotations(left_speed=-10, right_speed=-10, rotations=1.6)
-main()
+#motors.on_for_rotations(left_speed=-10, right_speed=-10, rotations=1.6)
+#main()
+threading.Thread(target=timer).start()
+
 #sweep(True)
 #sweep(False)
 
